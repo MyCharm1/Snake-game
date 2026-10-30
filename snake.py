@@ -7,8 +7,22 @@ def main(stdscr):
     stdscr.nodelay(1)
     stdscr.timeout(100)
 
+    # Initialize terminal colors
+    curses.start_color()
+    curses.use_default_colors()
+
+    # Define color pairs: curses.init_pair(PAIR_ID, FOREGROUND, BACKGROUND)
+    curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)  # Snake
+    curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)    # Food
+    curses.init_pair(3, curses.COLOR_CYAN, curses.COLOR_BLACK)   # Border
+
     sh, sw = stdscr.getmaxyx()
     w = stdscr.subwin(sh, sw, 0, 0)
+
+    # Draw border around the playing area
+    w.attron(curses.color_pair(3))
+    w.border(0, 0, 0, 0, 0, 0, 0, 0)
+    w.attroff(curses.color_pair(3))
 
     # Initial Snake and Food position
     snk_x = sw // 4
@@ -20,7 +34,7 @@ def main(stdscr):
     ]
 
     food = [sh // 2, sw // 2]
-    w.addch(int(food[0]), int(food[1]), curses.ACS_PI)
+    w.addch(int(food[0]), int(food[1]), '*', curses.color_pair(2))
 
     key = curses.KEY_RIGHT
     score = 0
@@ -63,12 +77,13 @@ def main(stdscr):
                     random.randint(1, sw - 2)
                 ]
                 food = nf if nf not in snake else None
-            w.addch(food[0], food[1], curses.ACS_PI)
+            w.addch(food[0], food[1], '*', curses.color_pair(2))
         else:
             tail = snake.pop()
             w.addch(int(tail[0]), int(tail[1]), ' ')
 
-        w.addch(int(snake[0][0]), int(snake[0][1]), curses.ACS_CKBOARD)
+        # Draw Snake Head/Body using 'O' symbol and Green color
+        w.addch(int(snake[0][0]), int(snake[0][1]), 'O', curses.color_pair(1))
 
 if __name__ == "__main__":
     curses.wrapper(main)
